@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- default field : id, keyword -->
+<mapper namespace="org.fastcatsearch.db.mapper.UserAccountMapper">
+
+	<update id="createTable">
+		create table UserAccount (
+		id int GENERATED ALWAYS AS IDENTITY,
+		name varchar(30),
+		userId varchar(30),
+		password varchar(200),
+		email varchar(60),
+		sms varchar(60),
+		telegram varchar(60),
+		groupId int,
+		primary key (id)
+		)
+	</update>
+	
+	<update id="createIndex" >
+		create unique index userId_UserAccount_index on UserAccount(userId)
+	</update>
+	
+	
+	<select id="validateTable" parameterType="map" resultType="map">
+		select id, name, userId, password, sms, groupId, telegram
+		from UserAccount 
+		fetch first 1 rows only
+	</select>
+
+	<update id="dropTable" parameterType="map">
+		drop table UserAccount
+	</update>
+	
+	<select id="getEntry" parameterType="int" resultType="org.fastcatsearch.db.vo.UserAccountVO">
+		select *
+		from UserAccount where id = #{id}
+	</select>
+	
+	<select id="getEntryByUserId" parameterType="String" resultType="org.fastcatsearch.db.vo.UserAccountVO">
+		select *
+		from UserAccount where userId = #{userId}
+	</select>
+
+	<select id="getEntryByUserIdAndPassword" parameterType="map" resultType="org.fastcatsearch.db.vo.UserAccountVO">
+		select * 
+		from UserAccount where userId = #{userId} and password = #{password}
+	</select>
+
+	<select id="getEntryList" parameterType="map" resultType="org.fastcatsearch.db.vo.UserAccountVO">
+		select *
+		from UserAccount
+	</select>
+
+	<select id="getCount" parameterType="map" resultType="int">
+		select count(*)
+		from UserAccount
+	</select>
+	
+	<select id="getMaxId" resultType="int">
+		select max(id) from UserAccount
+	</select> 
+
+	<insert id="putEntry" parameterType="org.fastcatsearch.db.vo.UserAccountVO" useGeneratedKeys="true" keyProperty="id">
+		insert into UserAccount ( 
+		name,userId,password,email,sms,groupId,telegram
+		)
+		values (
+		#{name},#{userId},#{password},#{email},#{sms},#{groupId},#{telegram}
+		)
+	</insert>
+	
+	<update id="updateEntry" parameterType="org.fastcatsearch.db.vo.UserAccountVO">
+		update UserAccount 
+		set name=#{name}, password=#{password}, email=#{email}, sms=#{sms}, groupId=#{groupId}, telegram=#{telegram}
+		where id=#{id}
+	</update>
+	
+	<update id="deleteEntry" parameterType="int">
+		delete from UserAccount where id = #{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+Derby SQL 문법에 따른다.
+ -->
+<mapper namespace="org.fastcatsearch.db.mapper.PopularKeywordMapper">
+
+	<update id="createTable">
+		create table PopularKeyword (
+			category varchar(64),
+			time varchar(20),
+			rank int,
+			word varchar(64),
+			count int,
+			rankDiffType varchar(3),
+			rankDiff int,
+			primary key (category, time, rank)
+		)
+	</update>
+	
+	<update id="createIndex" parameterType="map">
+		create index popular_category_index on PopularKeyword(category)
+	</update>
+	
+	<select id="validateTable" parameterType="map" resultType="map">
+		select category, time, word, count, rank, rankDiffType, rankDiff
+		from PopularKeyword
+		fetch first 1 rows only
+	</select>
+
+	<update id="dropTable" parameterType="map">
+		drop table PopularKeyword
+	</update>
+	
+	<select id="getEntryList" parameterType="map" resultType="org.fastcatsearch.db.vo.PopularKeywordVO">
+		select * from PopularKeyword 
+		where category=#{category} and time=#{time}
+	</select>
+	
+	<select id="getTopEntryList" parameterType="map" resultType="org.fastcatsearch.db.vo.PopularKeywordVO">
+		select * from PopularKeyword 
+		where category=#{category} and time=#{time} and rank <= #{limit}
+		order by rank asc
+	</select>
+	
+	<select id="getRankEntry" parameterType="map" resultType="org.fastcatsearch.db.vo.PopularKeywordVO">
+		select * 
+		from PopularKeyword
+		where category = #{category} and time = #{time} and rank = #{rank}
+	</select>
+	
+	<select id="getCount" parameterType="map" resultType="int">
+		select count(*) from PopularKeyword where category=#{category} and time=#{time}
+	</select>
+	
+	<insert id="putEntry" parameterType="org.fastcatsearch.db.vo.PopularKeywordVO">
+		insert into PopularKeyword 
+		(category,time,word,count,rank,rankDiffType, rankDiff) values
+		(#{category}, #{time}, #{word}, #{count}, #{rank}, #{rankDiffType}, #{rankDiff})
+	</insert>
+	
+	<update id="updateEntry" parameterType="org.fastcatsearch.db.vo.PopularKeywordVO">
+		update PopularKeyword set 
+		word = #{word},
+		count = #{count},
+		rank = #{rank},
+		rankDiffType = #{rankDiffType},
+		rankDiff = #{rankDiff}
+		where category = #{category} and time = #{time} and rank = #{rank}
+	</update>
+	
+	<delete id="deleteEntry" parameterType="int">
+		delete from PopularKeyword where id=#{id}
+	</delete>
+	
+	<delete id="deleteElderThan" parameterType="map">
+	</delete>
+	
+	<delete id="deleteKeywordList" parameterType="map">
+		delete from PopularKeyword
+		where id in (${idList})
+	</delete>
+	
+	<delete id="truncate" parameterType="map">
+		truncate table PopularKeyword
+	</delete>
+	
+	
+	
+	<update id="updateOrInsertList" parameterType="map">
+		insert into PopularKeyword 
+		(category,time,word,count,rank,rankDiffType) values
+		(#{category}, #{time}, #{word}, #{count}, #{rank}, #{rankDiffType})
+	</update>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- default field : id, keyword -->
+<mapper namespace="org.fastcatsearch.db.mapper.TaskHistoryMapper">
+
+	<update id="createTable">
+		create table TaskHistory (
+		id int GENERATED ALWAYS AS IDENTITY,
+		taskId bigint,
+		executable varchar(200),
+		args varchar(3000),
+		status varchar(10),
+		resultStr varchar(3000),
+		isScheduled smallint,
+		startTime timestamp,
+		endTime timestamp,
+		duration int,
+		primary key (id)
+		)
+	</update>
+	
+	<update id="createIndex" >
+		create index status_TaskHistory_index on TaskHistory(status)
+	</update>
+	
+	<select id="validateTable" parameterType="map" resultType="map">
+		select id, taskId, executable
+		from TaskHistory
+		fetch first 1 rows only
+	</select>
+
+	<update id="dropTable" parameterType="map">
+		drop table TaskHistory
+	</update>
+
+	<select id="getEntry" parameterType="int" resultType="org.fastcatsearch.db.vo.TaskHistoryVO">
+		select *
+		from TaskHistory where id = #{id}
+	</select>
+
+	<select id="getEntryList" parameterType="map" resultType="org.fastcatsearch.db.vo.TaskHistoryVO">
+
+		<if test="start &gt;= 0 and end &gt;= 0">
+			select tmp2.* 
+			from (
+				select row_number() over() as rownum, tmp.* 
+				from ( 
+					select * from TaskHistory
+					order by id desc 
+			    ) as tmp 
+			) tmp2
+			where rownum &gt;= #{start} and rownum &lt;= #{end}
+		</if>
+	</select>
+
+	<select id="getCount" parameterType="map" resultType="int">
+		select count(*)
+		from TaskHistory
+	</select>
+
+	<insert id="putEntry" parameterType="org.fastcatsearch.db.vo.TaskHistoryVO" useGeneratedKeys="true">
+		insert into TaskHistory ( 
+		taskId, executable, args, status, resultStr, isScheduled, startTime, endTime, duration
+		)
+		values (
+		#{taskId}, #{executable}, #{args}, #{status}, #{resultStr}, #{isScheduled}, #{startTime}, #{endTime}, #{duration}
+		)
+	</insert>
+
+</mapper>

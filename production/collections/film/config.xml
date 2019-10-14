@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<collection-config>
+    <name>film</name>
+    <index-node>node1</index-node>
+    <search-node-list>
+        <node>node1</node>
+    </search-node-list>
+    <data-node-list>
+        <node>node1</node>
+    </data-node-list>
+    <data-plan>
+        <segment-revision-backup-size>0</segment-revision-backup-size>
+        <segment-document-limit>2000000</segment-document-limit>
+        <data-sequence-cycle>2</data-sequence-cycle>
+    </data-plan>
+    <full-indexing-alert-timeout>0</full-indexing-alert-timeout>
+    <add-indexing-alert-timeout>0</add-indexing-alert-timeout>
+</collection-config>
